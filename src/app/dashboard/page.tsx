@@ -6,22 +6,7 @@ import { useRouter } from "next/navigation";
 import TeacherForm from "@/components/TeacherForm";
 import TeacherTable from "@/components/TeacherTable";
 import Sidebar from "@/components/sidebar";
-
-interface Teacher {
-  _id: string;
-  name: string;
-  department: string;
-  bcsBatch: string;
-  idNumber: string;
-  nidNumber: string;
-  eTin: string;
-  createdBy: {
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+import { Teacher } from "@/types/types";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();

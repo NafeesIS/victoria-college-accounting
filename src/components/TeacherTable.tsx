@@ -1,36 +1,7 @@
 'use client';
 
+import { Filters, TeacherTableProps } from '@/types/types';
 import { useState } from 'react';
-
-interface Teacher {
-  _id: string;
-  name: string;
-  department: string;
-  bcsBatch: string;
-  idNumber: string;
-  nidNumber: string;
-  eTin: string;
-  createdBy: {
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Filters {
-  search: string;
-  department: string;
-  sortBy: string;
-  sortOrder: string;
-}
-
-interface TeacherTableProps {
-  teachers: Teacher[];
-  isLoading: boolean;
-  filters: Filters;
-  onFilterChange: (filters: Filters) => void;
-}
 
 const departments = [
   'Accounting',

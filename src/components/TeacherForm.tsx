@@ -1,26 +1,7 @@
 'use client';
 
+import { TeacherFormProps } from '@/types/types';
 import { useState } from 'react';
-
-interface Teacher {
-  _id: string;
-  name: string;
-  department: string;
-  bcsBatch: string;
-  idNumber: string;
-  nidNumber: string;
-  eTin: string;
-  createdBy: {
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface TeacherFormProps {
-  onTeacherAdded: (teacher: Teacher) => void;
-}
 
 const departments = [
   'Accounting',

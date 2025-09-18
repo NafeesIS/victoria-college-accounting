@@ -1,12 +1,7 @@
 'use client';
 
+import { SidebarProps } from '@/types/types';
 import { signOut } from 'next-auth/react';
-
-interface SidebarProps {
-  activeSection: string;
-  setActiveSection: (section: string) => void;
-  userName: string;
-}
 
 export default function Sidebar({ activeSection, setActiveSection, userName }: SidebarProps) {
   const menuItems = [
