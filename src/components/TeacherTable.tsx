@@ -1,8 +1,54 @@
 'use client';
 
-import { departments } from '@/contants';
-import { Filters, TeacherTableProps } from '@/types/types';
 import { useState } from 'react';
+
+interface Teacher {
+  _id: string;
+  name: string;
+  department: string;
+  bcsBatch: string;
+  idNumber: string;
+  nidNumber: string;
+  eTin: string;
+  createdBy: {
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Filters {
+  search: string;
+  department: string;
+  sortBy: string;
+  sortOrder: string;
+}
+
+interface TeacherTableProps {
+  teachers: Teacher[];
+  isLoading: boolean;
+  filters: Filters;
+  onFilterChange: (filters: Filters) => void;
+}
+
+const departments = [
+  'Accounting',
+  'Management',
+  'Economics',
+  'Finance',
+  'Marketing',
+  'Computer Science',
+  'English',
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'History',
+  'Political Science',
+  'Philosophy',
+  'Psychology',
+];
 
 const sortOptions = [
   { value: 'name', label: 'Name' },
@@ -53,7 +99,7 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
                 placeholder="Search by name, ID, NID, or E-TIN..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               />
               <button
                 type="submit"
@@ -68,18 +114,18 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
             <select
               value={filters.department}
               onChange={(e) => handleFilterChange('department', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
             >
               <option value="all">All Departments</option>
               {departments.map((dept) => (
-                <option key={dept} value={dept}>
+                <option className='text-gray-900' key={dept} value={dept}>
                   {dept}
                 </option>
               ))}
             </select>
           </div>
 
-          <div>
+          {/* <div>
             <select
               value={`${filters.sortBy}-${filters.sortOrder}`}
               onChange={(e) => {
@@ -96,10 +142,10 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
                 </optgroup>
               ))}
             </select>
-          </div>
+          </div> */}
         </div>
 
-        <div className="mt-4 text-sm text-gray-600">
+        <div className="mt-4 text-sm text-gray-900">
           Total: {teachers.length} teacher{teachers.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -108,11 +154,11 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
       <div className="overflow-x-auto">
         {isLoading ? (
           <div className="p-8 text-center">
-            <div className="text-gray-500">Loading teachers...</div>
+            <div className="text-gray-900">Loading teachers...</div>
           </div>
         ) : teachers.length === 0 ? (
           <div className="p-8 text-center">
-            <div className="text-gray-500">No teachers found</div>
+            <div className="text-gray-900">No teachers found</div>
           </div>
         ) : (
           <table className="min-w-full divide-y divide-gray-200">
@@ -120,31 +166,31 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
               <tr>
                 <th
                   onClick={() => handleSort('name')}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
                   Name {getSortIcon('name')}
                 </th>
                 <th
                   onClick={() => handleSort('department')}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
                   Department {getSortIcon('department')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   BCS Batch
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   ID Number
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   NID Number
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   E-TIN
                 </th>
                 <th
                   onClick={() => handleSort('createdAt')}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
                   Date Added {getSortIcon('createdAt')}
                 </th>

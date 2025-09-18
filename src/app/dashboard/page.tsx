@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import TeacherForm from "@/components/TeacherForm";
@@ -22,6 +22,37 @@ export default function Dashboard() {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session) {
+      router.push("/auth/signin");
+      return;
+    }
+
+    fetchTeachers();
+  }, [session, status, filters]);
+
+  const fetchTeachers = async () => {
+    try {
+      const params = new URLSearchParams(filters);
+      const response = await fetch(`/api/teachers?${params}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setTeachers(data);
+      }
+    } catch (error) {
+      console.error("Error fetching teachers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTeacherAdded = (newTeacher: Teacher) => {
+    setTeachers((prev) => [newTeacher, ...prev]);
+  };
 
   const handleFilterChange = (newFilters: typeof filters) => {
     setFilters(newFilters);
@@ -78,9 +109,7 @@ export default function Dashboard() {
         <main className="flex-1 overflow-auto p-6">
           {activeSection === "register" && (
             <div className="max-w-2xl">
-              <TeacherForm
-                onTeacherAdded={(t) => setTeachers([t, ...teachers])}
-              />
+              <TeacherForm onTeacherAdded={handleTeacherAdded} />
             </div>
           )}
           {activeSection === "list" && (

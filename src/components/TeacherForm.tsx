@@ -1,23 +1,25 @@
-'use client';
+"use client";
 
-import { departments } from '@/contants';
-import { TeacherFormProps } from '@/types/types';
-import { useState } from 'react';
+import { departments } from "@/contants";
+import { TeacherFormProps } from "@/types/types";
+import { useState } from "react";
 
 export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
   const [formData, setFormData] = useState({
-    name: '',
-    department: '',
-    bcsBatch: '',
-    idNumber: '',
-    nidNumber: '',
-    eTin: '',
+    name: "",
+    department: "",
+    bcsBatch: "",
+    idNumber: "",
+    nidNumber: "",
+    eTin: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -27,14 +29,14 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      const response = await fetch('/api/teachers', {
-        method: 'POST',
+      const response = await fetch("/api/teachers", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
@@ -42,22 +44,22 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess('Teacher registered successfully!');
+        setSuccess("Teacher registered successfully!");
         onTeacherAdded(data);
         setFormData({
-          name: '',
-          department: '',
-          bcsBatch: '',
-          idNumber: '',
-          nidNumber: '',
-          eTin: '',
+          name: "",
+          department: "",
+          bcsBatch: "",
+          idNumber: "",
+          nidNumber: "",
+          eTin: "",
         });
-        setTimeout(() => setSuccess(''), 3000);
+        setTimeout(() => setSuccess(""), 3000);
       } else {
-        setError(data.error || 'Something went wrong');
+        setError(data.error || "Something went wrong");
       }
     } catch (error) {
-      setError('Network error. Please try again.');
+      setError("Network error. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +70,10 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               Full Name *
             </label>
             <input
@@ -78,13 +83,16 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.name}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               placeholder="Enter teacher's full name"
             />
           </div>
 
           <div>
-            <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="department"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               Department *
             </label>
             <select
@@ -93,11 +101,11 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.department}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-[#9ca3af]"
             >
               <option value="">Select Department</option>
               {departments.map((dept) => (
-                <option key={dept} value={dept}>
+                <option key={dept} value={dept} className="text-gray-900">
                   {dept}
                 </option>
               ))}
@@ -105,7 +113,10 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
           </div>
 
           <div>
-            <label htmlFor="bcsBatch" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="bcsBatch"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               BCS Batch *
             </label>
             <input
@@ -115,13 +126,16 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.bcsBatch}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               placeholder="e.g., 35th BCS"
             />
           </div>
 
           <div>
-            <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="idNumber"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               ID Number *
             </label>
             <input
@@ -131,13 +145,16 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.idNumber}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               placeholder="Enter ID number"
             />
           </div>
 
           <div>
-            <label htmlFor="nidNumber" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="nidNumber"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               NID Number *
             </label>
             <input
@@ -147,13 +164,16 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.nidNumber}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               placeholder="Enter NID number"
             />
           </div>
 
           <div>
-            <label htmlFor="eTin" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="eTin"
+              className="block text-sm font-medium text-gray-900 mb-2"
+            >
               E-TIN *
             </label>
             <input
@@ -163,7 +183,7 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               required
               value={formData.eTin}
               onChange={handleChange}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
               placeholder="Enter E-TIN number"
             />
           </div>
@@ -187,7 +207,7 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
             disabled={isLoading}
             className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
-            {isLoading ? 'Registering...' : 'Register Teacher'}
+            {isLoading ? "Registering..." : "Register Teacher"}
           </button>
         </div>
       </form>
