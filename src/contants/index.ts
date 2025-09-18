@@ -1,0 +1,17 @@
+export const departments = [
+  'Accounting',
+  'Management',
+  'Economics',
+  'Finance',
+  'Marketing',
+  'Computer Science',
+  'English',
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+  'History',
+  'Political Science',
+  'Philosophy',
+  'Psychology',
+];

@@ -1,25 +1,8 @@
 'use client';
 
+import { departments } from '@/contants';
 import { TeacherFormProps } from '@/types/types';
 import { useState } from 'react';
-
-const departments = [
-  'Accounting',
-  'Management',
-  'Economics',
-  'Finance',
-  'Marketing',
-  'Computer Science',
-  'English',
-  'Mathematics',
-  'Physics',
-  'Chemistry',
-  'Biology',
-  'History',
-  'Political Science',
-  'Philosophy',
-  'Psychology',
-];
 
 export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
   const [formData, setFormData] = useState({
