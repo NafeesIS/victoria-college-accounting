@@ -99,7 +99,7 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
                 placeholder="Search by name, ID, NID, or E-TIN..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 min-w-0"
               />
               <button
                 type="submit"
