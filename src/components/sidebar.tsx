@@ -17,8 +17,8 @@ export default function Sidebar({
   onClose,
 }: ResponsiveSidebarProps) {
   const menuItems = [
-    { id: "register", label: "Register Teacher", icon: "👤" },
-    { id: "list", label: "Teachers List", icon: "📋" },
+    { id: "register", label: "Register Employee", icon: "👤" },
+    { id: "employee-list", label: "Employee List", icon: "📋" },
     { id: "exam-register", label: "Register Exam", icon: "📝" },
     { id: "exam-list", label: "Exams List", icon: "📊" },
   ];

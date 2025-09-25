@@ -37,7 +37,7 @@ export default function Dashboard() {
 
   // Common
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("teacher-register");
+  const [activeSection, setActiveSection] = useState("register");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Fetch data when logged in
@@ -49,7 +49,7 @@ export default function Dashboard() {
       return;
     }
 
-    if (activeSection.startsWith("teacher")) {
+    if (activeSection.startsWith("employee")) {
       fetchTeachers();
     } else {
       fetchExams();
@@ -134,8 +134,8 @@ export default function Dashboard() {
           </button>
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              {activeSection === "teacher-register" && "Register Teacher"}
-              {activeSection === "teacher-list" && "Teachers List"}
+              {activeSection === "register" && "Register Employee"}
+              {activeSection === "employee-list" && "Employee List"}
               {activeSection === "exam-register" && "Register Exam"}
               {activeSection === "exam-list" && "Exams List"}
             </h1>
@@ -152,7 +152,7 @@ export default function Dashboard() {
               <TeacherForm onTeacherAdded={handleTeacherAdded} />
             </div>
           )}
-          {activeSection === "list" && (
+          {activeSection === "employee-list" && (
             <TeacherTable
               teachers={teachers}
               isLoading={isLoading}
