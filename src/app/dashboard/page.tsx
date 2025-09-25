@@ -147,12 +147,12 @@ export default function Dashboard() {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-6">
-          {activeSection === "teacher-register" && (
+          {activeSection === "register" && (
             <div>
               <TeacherForm onTeacherAdded={handleTeacherAdded} />
             </div>
           )}
-          {activeSection === "teacher-list" && (
+          {activeSection === "list" && (
             <TeacherTable
               teachers={teachers}
               isLoading={isLoading}
