@@ -1,63 +1,22 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-
-interface Teacher {
-  _id: string;
-  name: string;
-  department: string;
-  bcsBatch: string;
-  idNumber: string;
-  nidNumber: string;
-  eTin: string;
-  createdBy: {
-    name: string;
-    email: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Filters {
-  search: string;
-  department: string;
-  sortBy: string;
-  sortOrder: string;
-}
-
-interface TeacherTableProps {
-  teachers: Teacher[];
-  isLoading: boolean;
-  filters: Filters;
-  onFilterChange: (filters: Filters) => void;
-}
-
-const departments = [
-  'Accounting',
-  'Management',
-  'Economics',
-  'Finance',
-  'Marketing',
-  'Computer Science',
-  'English',
-  'Mathematics',
-  'Physics',
-  'Chemistry',
-  'Biology',
-  'History',
-  'Political Science',
-  'Philosophy',
-  'Psychology',
-];
+import { departments } from "@/contants";
+import { Filters, TeacherTableProps } from "@/types/types";
+import { useState } from "react";
 
 const sortOptions = [
-  { value: 'name', label: 'Name' },
-  { value: 'department', label: 'Department' },
-  { value: 'bcsBatch', label: 'BCS Batch' },
-  { value: 'createdAt', label: 'Date Added' },
+  { value: "name", label: "Name" },
+  { value: "department", label: "Department" },
+  { value: "bcsBatch", label: "BCS Batch" },
+  { value: "createdAt", label: "Date Added" },
 ];
 
-export default function TeacherTable({ teachers, isLoading, filters, onFilterChange }: TeacherTableProps) {
+export default function TeacherTable({
+  teachers,
+  isLoading,
+  filters,
+  onFilterChange,
+}: TeacherTableProps) {
   const [searchInput, setSearchInput] = useState(filters.search);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -70,21 +29,22 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
   };
 
   const handleSort = (sortBy: string) => {
-    const newSortOrder = filters.sortBy === sortBy && filters.sortOrder === 'asc' ? 'desc' : 'asc';
+    const newSortOrder =
+      filters.sortBy === sortBy && filters.sortOrder === "asc" ? "desc" : "asc";
     onFilterChange({ ...filters, sortBy, sortOrder: newSortOrder });
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const getSortIcon = (column: string) => {
-    if (filters.sortBy !== column) return '↕️';
-    return filters.sortOrder === 'asc' ? '↑' : '↓';
+    if (filters.sortBy !== column) return "↕️";
+    return filters.sortOrder === "asc" ? "↑" : "↓";
   };
 
   return (
@@ -113,12 +73,12 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
           <div>
             <select
               value={filters.department}
-              onChange={(e) => handleFilterChange('department', e.target.value)}
+              onChange={(e) => handleFilterChange("department", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
             >
               <option value="all">All Departments</option>
               {departments.map((dept) => (
-                <option className='text-gray-900' key={dept} value={dept}>
+                <option className="text-gray-900" key={dept} value={dept}>
                   {dept}
                 </option>
               ))}
@@ -146,7 +106,7 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
         </div>
 
         <div className="mt-4 text-sm text-gray-900">
-          Total: {teachers.length} teacher{teachers.length !== 1 ? 's' : ''}
+          Total: {teachers.length} teacher{teachers.length !== 1 ? "s" : ""}
         </div>
       </div>
 
@@ -165,16 +125,22 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
             <thead className="bg-gray-50">
               <tr>
                 <th
-                  onClick={() => handleSort('name')}
+                  onClick={() => handleSort("name")}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
-                  Name {getSortIcon('name')}
+                  Name {getSortIcon("name")}
                 </th>
                 <th
-                  onClick={() => handleSort('department')}
+                  onClick={() => handleSort("department")}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
-                  Department {getSortIcon('department')}
+                  Department {getSortIcon("department")}
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                  Designation
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                   BCS Batch
@@ -189,10 +155,10 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
                   E-TIN
                 </th>
                 <th
-                  onClick={() => handleSort('createdAt')}
+                  onClick={() => handleSort("createdAt")}
                   className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 >
-                  Date Added {getSortIcon('createdAt')}
+                  Date Added {getSortIcon("createdAt")}
                 </th>
               </tr>
             </thead>
@@ -200,11 +166,21 @@ export default function TeacherTable({ teachers, isLoading, filters, onFilterCha
               {teachers.map((teacher) => (
                 <tr key={teacher._id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{teacher.name}</div>
-                    <div className="text-sm text-gray-500">by {teacher.createdBy.name}</div>
+                    <div className="text-sm font-medium text-gray-900">
+                      {teacher.name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      by {teacher.createdBy.name}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {teacher.department}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {teacher.type}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {teacher.designation}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {teacher.bcsBatch}

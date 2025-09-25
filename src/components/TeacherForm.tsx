@@ -1,6 +1,6 @@
 "use client";
 
-import { departments } from "@/contants";
+import { departments, governmentDesignations } from "@/contants";
 import { TeacherFormProps } from "@/types/types";
 import { useState } from "react";
 
@@ -12,6 +12,8 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
     idNumber: "",
     nidNumber: "",
     eTin: "",
+    type: "government",
+    designation: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -53,6 +55,8 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
           idNumber: "",
           nidNumber: "",
           eTin: "",
+          type: "",
+          designation: "",
         });
         setTimeout(() => setSuccess(""), 3000);
       } else {
@@ -111,7 +115,56 @@ export default function TeacherForm({ onTeacherAdded }: TeacherFormProps) {
               ))}
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-[#9ca3af] mb-2">
+              Type *
+            </label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleChange}
+              className="block w-full px-3 py-2 border rounded-md text-gray-900"
+            >
+              <option className="text-gray-900" value="government">
+                Government
+              </option>
+              <option className="text-gray-900" value="non-government">
+                Non-Government
+              </option>
+            </select>
+          </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Designation *
+            </label>
+            {formData.type === "government" ? (
+              <select
+                id="designation"
+                name="designation"
+                required
+                value={formData.designation}
+                onChange={handleChange}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-[#9ca3af]"
+              >
+                <option value="">Select designation</option>
+                {governmentDesignations.map((deg) => (
+                  <option key={deg} value={deg} className="text-gray-900">
+                    {deg}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                name="designation"
+                value={formData.designation}
+                onChange={handleChange}
+                placeholder="Enter designation"
+                className="block w-full px-3 py-2 border rounded-md"
+              />
+            )}
+          </div>
           <div>
             <label
               htmlFor="bcsBatch"

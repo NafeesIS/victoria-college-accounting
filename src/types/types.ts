@@ -2,6 +2,8 @@ export interface Teacher {
   _id: string;
   name: string;
   department: string;
+  designation: string;
+  type: string;
   bcsBatch: string;
   idNumber: string;
   nidNumber: string;
