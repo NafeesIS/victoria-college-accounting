@@ -9,7 +9,7 @@ import Exam from "../../../../models/Exam";
 // ================================
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -17,9 +17,11 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await context.params; // ✅ fixed
+
     await dbConnect();
 
-    const exam = await Exam.findOne({ _id: params.id, softDeleted: false })
+    const exam = await Exam.findOne({ _id: id, softDeleted: false })
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email");
 
@@ -30,7 +32,10 @@ export async function GET(
     return NextResponse.json(exam);
   } catch (error) {
     console.error("Get exam error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -39,13 +44,15 @@ export async function GET(
 // ================================
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { id } = await context.params; // ✅ fixed params
 
     const {
       year,
@@ -112,6 +119,7 @@ export async function PUT(
     const incomeAmount =
       thisCollegeCount * thisCollegeRate +
       otherCollegeCount * otherCollegeRate;
+
     const totalIncome = incomeAmount;
 
     const examManagement = expenses.examManagement || 0;
@@ -124,24 +132,31 @@ export async function PUT(
       );
     }
 
-    // ✅ Distribution amounts
+    // ✅ Distribution amounts (rounded to 2 decimals)
     const calculatedDistribution = {
       govtTreasury: {
         percent: distribution.govtTreasury.percent,
-        amount: (distribution.govtTreasury.percent / 100) * distributableFund,
+        amount: Number(
+          ((distribution.govtTreasury.percent / 100) * distributableFund).toFixed(2)
+        ),
       },
       teachersCouncil: {
         percent: distribution.teachersCouncil.percent,
-        amount: (distribution.teachersCouncil.percent / 100) * distributableFund,
+        amount: Number(
+          ((distribution.teachersCouncil.percent / 100) * distributableFund).toFixed(2)
+        ),
       },
       staffInvigilators: {
         percent: distribution.staffInvigilators.percent,
-        amount:
-          (distribution.staffInvigilators.percent / 100) * distributableFund,
+        amount: Number(
+          ((distribution.staffInvigilators.percent / 100) * distributableFund).toFixed(2)
+        ),
       },
       adminCommittee: {
         percent: distribution.adminCommittee.percent,
-        amount: (distribution.adminCommittee.percent / 100) * distributableFund,
+        amount: Number(
+          ((distribution.adminCommittee.percent / 100) * distributableFund).toFixed(2)
+        ),
       },
     };
 
@@ -159,10 +174,11 @@ export async function PUT(
       );
     }
 
+    // ✅ DB update
     await dbConnect();
 
     const exam = await Exam.findOneAndUpdate(
-      { _id: params.id, softDeleted: false },
+      { _id: id, softDeleted: false },
       {
         year,
         examCategory,
@@ -199,12 +215,16 @@ export async function PUT(
   }
 }
 
+
 // ================================
 // DELETE /api/exams/[id] (soft delete)
 // ================================
+// ================================
+// DELETE /api/exams/[id]
+// ================================
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -212,10 +232,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await context.params; // ✅ FIXED
+
     await dbConnect();
 
     const exam = await Exam.findOneAndUpdate(
-      { _id: params.id, softDeleted: false },
+      { _id: id, softDeleted: false },
       {
         softDeleted: true,
         updatedBy: session.user.id,
@@ -230,6 +252,10 @@ export async function DELETE(
     return NextResponse.json({ message: "Exam deleted successfully" });
   } catch (error) {
     console.error("Delete exam error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
+
