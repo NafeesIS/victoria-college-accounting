@@ -1,24 +1,32 @@
-'use client';
+"use client";
 
-import { SidebarProps } from '@/types/types';
-import { signOut } from 'next-auth/react';
-import { X } from 'lucide-react';
+import { SidebarProps } from "@/types/types";
+import { signOut } from "next-auth/react";
+import { X } from "lucide-react";
 
 interface ResponsiveSidebarProps extends SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function Sidebar({ activeSection, setActiveSection, userName, isOpen, onClose }: ResponsiveSidebarProps) {
+export default function Sidebar({
+  activeSection,
+  setActiveSection,
+  userName,
+  isOpen,
+  onClose,
+}: ResponsiveSidebarProps) {
   const menuItems = [
-    { id: 'register', label: 'Register Teacher', icon: '👤' },
-    { id: 'list', label: 'Teachers List', icon: '📋' },
+    { id: "register", label: "Register Teacher", icon: "👤" },
+    { id: "list", label: "Teachers List", icon: "📋" },
+    { id: "exam-register", label: "Register Exam", icon: "📝" },
+    { id: "exam-list", label: "Exams List", icon: "📊" },
   ];
 
   return (
     <div
       className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-indigo-900 text-white flex flex-col transform transition-transform duration-300 
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+      ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
       {/* Header */}
       <div className="p-6 flex justify-between items-center">
@@ -47,8 +55,8 @@ export default function Sidebar({ activeSection, setActiveSection, userName, isO
                 }}
                 className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-colors ${
                   activeSection === item.id
-                    ? 'bg-indigo-800 text-white'
-                    : 'text-indigo-200 hover:bg-indigo-800 hover:text-white'
+                    ? "bg-indigo-800 text-white"
+                    : "text-indigo-200 hover:bg-indigo-800 hover:text-white"
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -66,7 +74,7 @@ export default function Sidebar({ activeSection, setActiveSection, userName, isO
           <p className="font-medium truncate">{userName}</p>
         </div>
         <button
-          onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+          onClick={() => signOut({ callbackUrl: "/auth/signin" })}
           className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white text-sm font-medium transition-colors"
         >
           Sign Out
