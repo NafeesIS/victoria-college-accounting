@@ -206,7 +206,10 @@ export default function ExamForm({
     // keep "expenses.distributable" read-only string for display consistent with calculated value
     setFormData((prev) => ({
       ...prev,
-      expenses: { ...prev.expenses, distributable: distributableExpenses.toFixed(2) },
+      expenses: {
+        ...prev.expenses,
+        distributable: distributableExpenses.toFixed(2),
+      },
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -655,7 +658,7 @@ function DistributionInput({
           min={0}
           max={100}
           step="0.01"
-          className="w-28 px-3 py-2 border border-gray-300 rounded-md shadow-sm
+          className="w-20 md:w-28 px-3 py-2 border border-gray-300 rounded-md shadow-sm
                      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
         />
         <span className="text-gray-700">%</span>
@@ -663,7 +666,7 @@ function DistributionInput({
           type="text"
           value={Number(amount || 0).toFixed(2)}
           readOnly
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-900"
+          className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-900"
         />
       </div>
     </div>
