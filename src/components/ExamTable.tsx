@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { Edit, Trash2, Search, Download } from "lucide-react";
 import { examCategories, yearOptions } from "@/contants";
+import * as XLSX from "xlsx";
 
 interface ExamTableProps {
   exams: any[];
@@ -62,60 +63,109 @@ export default function ExamTable({
     return filters.sortOrder === "asc" ? "↑" : "↓";
   };
 
-  const exportToCSV = () => {
-    const headers = [
-      "Year",
-      "Category",
-      "Exam Name",
-      "This College Students",
-      "This College Rate",
-      "Other College Students",
-      "Other College Rate",
-      "Income",
-      "Expenses",
-      "Distributable",
-      "Govt Treasury %",
-      "Teachers Council %",
-      "Staff/Invigilators %",
-      "Admin Committee %",
-      "Date Added",
+  // const exportToCSV = () => {
+  //   const headers = [
+  //     "Year",
+  //     "Category",
+  //     "Exam Name",
+  //     "This College Students",
+  //     "This College Rate",
+  //     "Other College Students",
+  //     "Other College Rate",
+  //     "Income",
+  //     "Expenses",
+  //     "Distributable",
+  //     "Govt Treasury %",
+  //     "Teachers Council %",
+  //     "Staff/Invigilators %",
+  //     "Admin Committee %",
+  //     "Date Added",
+  //   ];
+
+  //   const csvData = exams.map((exam) => [
+  //     exam.year,
+  //     exam.examCategory,
+  //     exam.examName,
+  //     exam.thisCollegeCount,
+  //     exam.thisCollegeRate,
+  //     exam.otherCollegeCount,
+  //     exam.otherCollegeRate,
+  //     exam.incomeAmount,
+  //     exam.totalExpenses,
+  //     exam.distributableFund,
+  //     exam.distribution?.govtTreasury?.percent || 0,
+  //     exam.distribution?.teachersCouncil?.percent || 0,
+  //     exam.distribution?.staffInvigilators?.percent || 0,
+  //     exam.distribution?.adminCommittee?.percent || 0,
+  //     formatDate(exam.createdAt),
+  //   ]);
+
+  //   const csvContent = [headers, ...csvData]
+  //     .map((row) => row.map((field) => `"${field}"`).join(","))
+  //     .join("\n");
+
+  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  //   const link = document.createElement("a");
+  //   const url = URL.createObjectURL(blob);
+  //   link.setAttribute("href", url);
+  //   link.setAttribute(
+  //     "download",
+  //     `exam-records-${new Date().toISOString().split("T")[0]}.csv`
+  //   );
+  //   link.style.visibility = "hidden";
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  // };
+
+  const exportToExcel = () => {
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+
+    // Manually build the rows to match your screenshot layout
+    const wsData = [
+      ["কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ, কুমিল্লা", "", "", "", ""],
+      ["২০২৩ সালের আগস্ট ৪র্থ সপ্তাহের হিসাব ও বণ্টন বিবরণী"],
+      [],
+      ["আয়ের বিবরণ", "", "", "ব্যয়", ""],
+      ["বিবরণ", "সংখ্যা", "মোট টাকা", "বিবরণ", "মোট ব্যয় টাকা"],
+      [
+        "বহিঃকলেজ পরীক্ষার্থী ফি প্রাপ্তি",
+        306,
+        459000,
+        "পরীক্ষা পরিচালনা খরচ বাবদ",
+        168687,
+      ],
+      ["এ কলেজের পরীক্ষার্থী ফি প্রাপ্তি", 169, 253500, "মোট ব্যয়", 168687],
+      ["মোট আয়", "", 712500, "", ""],
+      [],
+      ["কন্টিনজেন্সি টাকা পরিমাণ", "", "", "", ""],
+      ["১০০০১২২.০০"],
+      ["সরকারি কোষাগারে জমা", "10%", "", "100012.2"],
+      ["শিক্ষক পরিষদ", "5%", "", "50006.1"],
+      ["ইনভিজিলেটর, পিয়ন, সুপারভাইজার প্রভৃতি", "53%", "", "530064.72"],
+      ["প্রধান, কমিটি ও অফিস", "32%", "", "320039.04"],
+      ["মোট", "100%", "", "1000122.00"],
     ];
 
-    const csvData = exams.map((exam) => [
-      exam.year,
-      exam.examCategory,
-      exam.examName,
-      exam.thisCollegeCount,
-      exam.thisCollegeRate,
-      exam.otherCollegeCount,
-      exam.otherCollegeRate,
-      exam.incomeAmount,
-      exam.totalExpenses,
-      exam.distributableFund,
-      exam.distribution?.govtTreasury?.percent || 0,
-      exam.distribution?.teachersCouncil?.percent || 0,
-      exam.distribution?.staffInvigilators?.percent || 0,
-      exam.distribution?.adminCommittee?.percent || 0,
-      formatDate(exam.createdAt),
-    ]);
+    // Convert to worksheet
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    const csvContent = [headers, ...csvData]
-      .map((row) => row.map((field) => `"${field}"`).join(","))
-      .join("\n");
+    // Example: merge cells like in your screenshot
+    ws["!merges"] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // row 1 merged across 5 cols
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }, // row 2 merged
+    ];
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `exam-records-${new Date().toISOString().split("T")[0]}.csv`
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Report");
+
+    // Export
+    XLSX.writeFile(
+      wb,
+      `exam-report-${new Date().toISOString().split("T")[0]}.xlsx`
     );
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -125,7 +175,7 @@ export default function ExamTable({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-900">Exam Records</h2>
           <button
-            onClick={exportToCSV}
+            onClick={exportToExcel}
             disabled={exams.length === 0}
             className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -171,7 +221,9 @@ export default function ExamTable({
           <div>
             <select
               value={filters.examCategory || "all"}
-              onChange={(e) => handleFilterChange("examCategory", e.target.value)}
+              onChange={(e) =>
+                handleFilterChange("examCategory", e.target.value)
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900"
             >
               <option value="all">All Categories</option>
@@ -200,8 +252,11 @@ export default function ExamTable({
           <div className="mt-4 text-sm text-gray-600">
             <span>
               Showing {(pagination.current - 1) * pagination.limit + 1} to{" "}
-              {Math.min(pagination.current * pagination.limit, pagination.count)} of{" "}
-              {pagination.count} entries
+              {Math.min(
+                pagination.current * pagination.limit,
+                pagination.count
+              )}{" "}
+              of {pagination.count} entries
             </span>
           </div>
         )}
@@ -323,13 +378,16 @@ export default function ExamTable({
                         Govt: {exam.distribution?.govtTreasury?.percent || 0}%
                       </div>
                       <div>
-                        Teachers: {exam.distribution?.teachersCouncil?.percent || 0}%
+                        Teachers:{" "}
+                        {exam.distribution?.teachersCouncil?.percent || 0}%
                       </div>
                       <div>
-                        Staff: {exam.distribution?.staffInvigilators?.percent || 0}%
+                        Staff:{" "}
+                        {exam.distribution?.staffInvigilators?.percent || 0}%
                       </div>
                       <div>
-                        Admin: {exam.distribution?.adminCommittee?.percent || 0}%
+                        Admin: {exam.distribution?.adminCommittee?.percent || 0}
+                        %
                       </div>
                     </div>
                   </td>
@@ -386,7 +444,8 @@ export default function ExamTable({
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
-                  Showing page <span className="font-medium">{pagination.current}</span> of{" "}
+                  Showing page{" "}
+                  <span className="font-medium">{pagination.current}</span> of{" "}
                   <span className="font-medium">{pagination.total}</span>
                 </p>
               </div>
@@ -401,24 +460,27 @@ export default function ExamTable({
                   </button>
 
                   {/* Page numbers */}
-                  {Array.from({ length: Math.min(5, pagination.total) }, (_, i) => {
-                    const page = Math.max(1, pagination.current - 2) + i;
-                    if (page > pagination.total) return null;
+                  {Array.from(
+                    { length: Math.min(5, pagination.total) },
+                    (_, i) => {
+                      const page = Math.max(1, pagination.current - 2) + i;
+                      if (page > pagination.total) return null;
 
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          pagination.current === page
-                            ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600"
-                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                            pagination.current === page
+                              ? "z-10 bg-indigo-50 border-indigo-500 text-indigo-600"
+                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    }
+                  )}
 
                   <button
                     onClick={() => handlePageChange(pagination.current + 1)}
