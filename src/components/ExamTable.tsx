@@ -26,6 +26,7 @@ export default function ExamTable({
   pagination,
 }: ExamTableProps) {
   const [searchInput, setSearchInput] = useState(filters.search || "");
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +47,10 @@ export default function ExamTable({
     onFilterChange({ ...filters, sortBy, sortOrder: newSortOrder });
   };
 
+  const handleRowSelect = (examId: string) => {
+    setSelectedRowId(selectedRowId === examId ? null : examId);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -63,109 +68,173 @@ export default function ExamTable({
     return filters.sortOrder === "asc" ? "↑" : "↓";
   };
 
-  // const exportToCSV = () => {
-  //   const headers = [
-  //     "Year",
-  //     "Category",
-  //     "Exam Name",
-  //     "This College Students",
-  //     "This College Rate",
-  //     "Other College Students",
-  //     "Other College Rate",
-  //     "Income",
-  //     "Expenses",
-  //     "Distributable",
-  //     "Govt Treasury %",
-  //     "Teachers Council %",
-  //     "Staff/Invigilators %",
-  //     "Admin Committee %",
-  //     "Date Added",
-  //   ];
+  const exportSelectedRowToExcel = () => {
+    const selectedExam = exams.find((exam) => exam._id === selectedRowId);
+    if (!selectedExam) {
+      alert("Please select a row to export");
+      return;
+    }
 
-  //   const csvData = exams.map((exam) => [
-  //     exam.year,
-  //     exam.examCategory,
-  //     exam.examName,
-  //     exam.thisCollegeCount,
-  //     exam.thisCollegeRate,
-  //     exam.otherCollegeCount,
-  //     exam.otherCollegeRate,
-  //     exam.incomeAmount,
-  //     exam.totalExpenses,
-  //     exam.distributableFund,
-  //     exam.distribution?.govtTreasury?.percent || 0,
-  //     exam.distribution?.teachersCouncil?.percent || 0,
-  //     exam.distribution?.staffInvigilators?.percent || 0,
-  //     exam.distribution?.adminCommittee?.percent || 0,
-  //     formatDate(exam.createdAt),
-  //   ]);
-
-  //   const csvContent = [headers, ...csvData]
-  //     .map((row) => row.map((field) => `"${field}"`).join(","))
-  //     .join("\n");
-
-  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  //   const link = document.createElement("a");
-  //   const url = URL.createObjectURL(blob);
-  //   link.setAttribute("href", url);
-  //   link.setAttribute(
-  //     "download",
-  //     `exam-records-${new Date().toISOString().split("T")[0]}.csv`
-  //   );
-  //   link.style.visibility = "hidden";
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  //   URL.revokeObjectURL(url);
-  // };
-
-  const exportToExcel = () => {
     // Create a new workbook
     const wb = XLSX.utils.book_new();
 
-    // Manually build the rows to match your screenshot layout
+    // Calculate totals for the selected exam
+    const totalIncome = selectedExam.incomeAmount || 0;
+    const totalExpenses = selectedExam.totalExpenses || 0;
+    const distributableAmount = selectedExam.distributableFund || 0;
+
+    // Prepare data matching the Bengali format layout
     const wsData = [
-      ["কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ, কুমিল্লা", "", "", "", ""],
-      ["২০২৩ সালের আগস্ট ৪র্থ সপ্তাহের হিসাব ও বণ্টন বিবরণী"],
+      ["কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ, কুমিল্লা", "", "", "", ""],
+      [
+        `${selectedExam.year} সালের ${selectedExam.examName} পরীক্ষার হিসাব ও বণ্টন বিবরণী`,
+        "",
+        "",
+        "",
+        "",
+      ],
       [],
-      ["আয়ের বিবরণ", "", "", "ব্যয়", ""],
-      ["বিবরণ", "সংখ্যা", "মোট টাকা", "বিবরণ", "মোট ব্যয় টাকা"],
+      ["আয়ের বিবরণ", "", "", "ব্যয়", ""],
+      [
+        "আয়ের বিবরণ",
+        "শিক্ষার্থীর সংখ্যা",
+        "টাকার হার",
+        "মোট আয় টাকার পরিমাণ",
+        "ব্যয়ের বিবরণ",
+        "মোট ব্যয় টাকার পরিমাণ",
+      ],
       [
         "বহিঃকলেজ পরীক্ষার্থী ফি প্রাপ্তি",
-        306,
-        459000,
-        "পরীক্ষা পরিচালনা খরচ বাবদ",
-        168687,
+        selectedExam.otherCollegeCount || 0,
+        selectedExam.otherCollegeRate || 0,
+        selectedExam.otherCollegeRate * selectedExam.otherCollegeCount || 0,
+        "পরীক্ষা পরিচালনা কাজে ব্যয়",
+        selectedExam.expenses.examManagement.toFixed(2),
       ],
-      ["এ কলেজের পরীক্ষার্থী ফি প্রাপ্তি", 169, 253500, "মোট ব্যয়", 168687],
-      ["মোট আয়", "", 712500, "", ""],
+      [
+        "এ কলেজের পরীক্ষার্থী ফি প্রাপ্তি",
+        selectedExam.thisCollegeCount || 0,
+        selectedExam.thisCollegeRate || 0,
+        selectedExam.thisCollegeCount * selectedExam.thisCollegeRate || 0,
+        "মোট বণ্টনকৃত টাকা পরিমাণ",
+        distributableAmount.toFixed(2),
+      ],
+      [
+        "মোট আয়=",
+        selectedExam.otherCollegeCount + selectedExam.thisCollegeCount,
+        "",
+        selectedExam.otherCollegeRate * selectedExam.otherCollegeCount +
+          selectedExam.thisCollegeCount * selectedExam.thisCollegeRate,
+        "মোট ব্যয়=",
+        totalExpenses.toFixed(2),
+      ],
       [],
-      ["কন্টিনজেন্সি টাকা পরিমাণ", "", "", "", ""],
-      ["১০০০১২২.০০"],
-      ["সরকারি কোষাগারে জমা", "10%", "", "100012.2"],
-      ["শিক্ষক পরিষদ", "5%", "", "50006.1"],
-      ["ইনভিজিলেটর, পিয়ন, সুপারভাইজার প্রভৃতি", "53%", "", "530064.72"],
-      ["প্রধান, কমিটি ও অফিস", "32%", "", "320039.04"],
-      ["মোট", "100%", "", "1000122.00"],
+      [
+        "বন্টনকৃত টাকা পরিমাণ",
+        "",
+        "বন্টনের বিবরণ",
+        "টাকার হার",
+        "মোট বন্টন টাকার পরিমাণ",
+      ],
+      [
+        distributableAmount.toFixed(2),
+        "",
+        "সরকারি কোষাগারে জমা",
+        `${selectedExam.distribution?.govtTreasury?.percent || 0}%`,
+        (
+          (distributableAmount *
+            (selectedExam.distribution?.govtTreasury?.percent || 0)) /
+          100
+        ).toFixed(2),
+      ],
+      [
+        "",
+        "",
+        "শিক্ষক পরিষদ",
+        `${selectedExam.distribution?.teachersCouncil?.percent || 0}%`,
+        (
+          (distributableAmount *
+            (selectedExam.distribution?.teachersCouncil?.percent || 0)) /
+          100
+        ).toFixed(2),
+      ],
+      [
+        "",
+        "",
+        "ইনভিজিলেটর, পরীক্ষা সংগঠক কাজে নিযুক্ত কর্মচারী (এল এস এস, দারোয়ান, সুপার ও অন্যান্য)",
+        `${selectedExam.distribution?.staffInvigilators?.percent || 0}%`,
+        (
+          (distributableAmount *
+            (selectedExam.distribution?.staffInvigilators?.percent || 0)) /
+          100
+        ).toFixed(2),
+      ],
+      [
+        "",
+        "",
+        "প্রধান, কমিটি ও অফিস",
+        `${selectedExam.distribution?.adminCommittee?.percent || 0}%`,
+        (
+          (distributableAmount *
+            (selectedExam.distribution?.adminCommittee?.percent || 0)) /
+          100
+        ).toFixed(2),
+      ],
+      ["", "", "মোট", "১০০%", distributableAmount.toFixed(2)],
     ];
 
     // Convert to worksheet
     const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    // Example: merge cells like in your screenshot
+    // Merge cells for titles and headers as in the original format
     ws["!merges"] = [
-      { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // row 1 merged across 5 cols
-      { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }, // row 2 merged
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }, // Row 1: college name across all 5 columns
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } }, // Row 2: subtitle across all 5 columns
+      { s: { r: 3, c: 0 }, e: { r: 3, c: 2 } }, // Row 4: "আয়ের বিবরণ" across 3 columns
+      { s: { r: 3, c: 3 }, e: { r: 3, c: 4 } }, // Row 4: "ব্যয়" across 2 columns
+      { s: { r: 10, c: 0 }, e: { r: 14, c: 0 } }, // Distribution amount spans multiple rows
+      { s: { r: 10, c: 1 }, e: { r: 14, c: 1 } }, // Empty column spans
+    ];
+    ws["A1"].s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center",
+      },
+      font: { bold: true },
+    };
+
+    ws["A2"].s = {
+      alignment: {
+        horizontal: "center",
+        vertical: "center",
+      },
+    };
+
+    ws["E11"].s = { alignment: { horizontal: "center", vertical: "center" } };
+    // Set column widths
+    ws["!cols"] = [
+      { wch: 35 }, // Column A - wider for descriptions
+      { wch: 15 }, // Column B - student count
+      { wch: 20 }, // Column C - rate
+      { wch: 20 }, // Column D - expense descriptions
+      { wch: 20 }, // Column E - amounts
+      { wch: 20 }, // Column E - amounts
     ];
 
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Report");
+    // Add the worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Exam Report");
 
-    // Export
+    // Export the workbook with exam-specific filename
     XLSX.writeFile(
       wb,
-      `exam-report-${new Date().toISOString().split("T")[0]}.xlsx`
+      `${selectedExam.examName}-${selectedExam.year}-report-${
+        new Date().toISOString().split("T")[0]
+      }.xlsx`
     );
+  };
+
+  const getSelectedExam = () => {
+    return exams.find((exam) => exam._id === selectedRowId);
   };
 
   return (
@@ -174,14 +243,21 @@ export default function ExamTable({
       <div className="p-6 border-b border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-900">Exam Records</h2>
-          <button
-            onClick={exportToExcel}
-            disabled={exams.length === 0}
-            className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download size={16} />
-            <span>Export CSV</span>
-          </button>
+          <div className="flex space-x-2">
+            {selectedRowId && (
+              <div className="text-sm text-gray-600 px-3 py-2 bg-blue-50 rounded-md">
+                Selected: {getSelectedExam()?.examName}
+              </div>
+            )}
+            <button
+              onClick={exportSelectedRowToExcel}
+              disabled={!selectedRowId}
+              className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download size={16} />
+              <span>Export Selected</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -276,6 +352,9 @@ export default function ExamTable({
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Select
+                </th>
                 <th
                   onClick={() => handleSort("year")}
                   className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -334,7 +413,23 @@ export default function ExamTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {exams.map((exam) => (
-                <tr key={exam._id} className="hover:bg-gray-50">
+                <tr
+                  key={exam._id}
+                  className={`hover:bg-gray-50 ${
+                    selectedRowId === exam._id
+                      ? "bg-blue-50 ring-2 ring-blue-200"
+                      : ""
+                  }`}
+                >
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <input
+                      type="radio"
+                      name="selectedRow"
+                      checked={selectedRowId === exam._id}
+                      onChange={() => handleRowSelect(exam._id)}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                    />
+                  </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                     {exam.year}
                   </td>
