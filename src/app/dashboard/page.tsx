@@ -4,26 +4,20 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import TeacherForm from "@/components/TeacherForm";
-import TeacherTable from "@/components/TeacherTable";
 import ExamForm from "@/components/ExamForm";
 import ExamTable from "@/components/ExamTable";
-import Sidebar from "@/components/sidebar";
-import { Teacher } from "@/types/types";
+import EnhancedSidebar from "@/components/EnhancedSidebar";
+import DynamicEmployeeForm from "@/components/DynamicEmployeeForm";
+import DynamicEmployeeTable from "@/components/DynamicEmployeeTable";
 import { Menu } from "lucide-react";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Teacher state
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [teacherFilters, setTeacherFilters] = useState({
-    search: "",
-    department: "all",
-    sortBy: "createdAt",
-    sortOrder: "desc",
-  });
+  // Employee state
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [editingEmployee, setEditingEmployee] = useState<any>(null);
 
   // Exam state
   const [exams, setExams] = useState<any[]>([]);
@@ -37,10 +31,23 @@ export default function Dashboard() {
 
   // Common
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("register");
+  const [activeSection, setActiveSection] = useState("exam-register");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Fetch data when logged in
+  // Extract category from section (e.g., "register-governmentTeacher" -> "governmentTeacher")
+  const getCurrentCategory = () => {
+    if (activeSection.startsWith("register-")) {
+      return activeSection.replace("register-", "");
+    }
+    if (activeSection.startsWith("list-")) {
+      return activeSection.replace("list-", "");
+    }
+    return null;
+  };
+
+  const currentCategory = getCurrentCategory();
+
+  // Fetch data when section changes
   useEffect(() => {
     if (status === "loading") return;
 
@@ -49,24 +56,29 @@ export default function Dashboard() {
       return;
     }
 
-    if (activeSection.startsWith("employee")) {
-      fetchTeachers();
-    } else {
+    if (activeSection.startsWith("list-")) {
+      fetchEmployees();
+    } else if (activeSection === "exam-list") {
       fetchExams();
+    } else {
+      setIsLoading(false);
     }
-  }, [session, status, teacherFilters, examFilters, activeSection]);
+  }, [session, status, activeSection, examFilters]);
 
-  // Fetch Teachers
-  const fetchTeachers = async () => {
+  // Fetch Employees
+  const fetchEmployees = async () => {
+    const category = currentCategory;
+    if (!category) return;
+
     try {
-      const params = new URLSearchParams(teacherFilters);
-      const response = await fetch(`/api/teachers?${params}`);
+      setIsLoading(true);
+      const response = await fetch(`/api/employees/${category}`);
       if (response.ok) {
         const data = await response.json();
-        setTeachers(data);
+        setEmployees(data);
       }
     } catch (error) {
-      console.error("Error fetching teachers:", error);
+      console.error("Error fetching employees:", error);
     } finally {
       setIsLoading(false);
     }
@@ -75,6 +87,7 @@ export default function Dashboard() {
   // Fetch Exams
   const fetchExams = async () => {
     try {
+      setIsLoading(true);
       const params = new URLSearchParams(examFilters);
       const response = await fetch(`/api/exams?${params}`);
       if (response.ok) {
@@ -89,13 +102,82 @@ export default function Dashboard() {
     }
   };
 
-  // Handlers
-  const handleTeacherAdded = (newTeacher: Teacher) => {
-    setTeachers((prev) => [newTeacher, ...prev]);
+  // Employee Handlers
+  const handleEmployeeAdded = (newEmployee: any) => {
+    setEmployees((prev) => [newEmployee, ...prev]);
+    // Optionally switch to list view
+    const category = currentCategory;
+    if (category) {
+      setActiveSection(`list-${category}`);
+    }
   };
 
+  const handleEmployeeUpdated = (updatedEmployee: any) => {
+    setEmployees((prev) =>
+      prev.map((emp) => (emp._id === updatedEmployee._id ? updatedEmployee : emp))
+    );
+    setEditingEmployee(null);
+    // Switch to list view
+    const category = currentCategory;
+    if (category) {
+      setActiveSection(`list-${category}`);
+    }
+  };
+
+  const handleEmployeeEdit = (employee: any) => {
+    setEditingEmployee(employee);
+    const category = currentCategory;
+    if (category) {
+      setActiveSection(`register-${category}`);
+    }
+  };
+
+  const handleEmployeeDelete = async (employeeId: string) => {
+    const category = currentCategory;
+    if (!category) return;
+
+    try {
+      const response = await fetch(`/api/employees/${category}/${employeeId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setEmployees((prev) => prev.filter((emp) => emp._id !== employeeId));
+        alert("Employee deleted successfully");
+      } else {
+        const data = await response.json();
+        alert(data.error || "Failed to delete employee");
+      }
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      alert("Failed to delete employee");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEmployee(null);
+  };
+
+  // Exam Handlers
   const handleExamAdded = (newExam: any) => {
     setExams((prev) => [newExam, ...prev]);
+  };
+
+  // Get page title
+  const getPageTitle = () => {
+    if (activeSection === "exam-register") return "Register Exam";
+    if (activeSection === "exam-list") return "Exams List";
+    if (activeSection.startsWith("register-")) {
+      const category = currentCategory;
+      if (category) {
+        // Get category label from employeeCategories
+        return editingEmployee ? "Edit Employee" : "Register Employee";
+      }
+    }
+    if (activeSection.startsWith("list-")) {
+      return "Employee List";
+    }
+    return "Dashboard";
   };
 
   if (status === "loading") {
@@ -114,9 +196,12 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar
+      <EnhancedSidebar
         activeSection={activeSection}
-        setActiveSection={setActiveSection}
+        setActiveSection={(section) => {
+          setActiveSection(section);
+          setEditingEmployee(null); // Clear editing state when changing sections
+        }}
         userName={session.user?.name || ""}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -134,10 +219,7 @@ export default function Dashboard() {
           </button>
           <div>
             <h1 className="text-lg font-semibold text-gray-900">
-              {activeSection === "register" && "Register Employee"}
-              {activeSection === "employee-list" && "Employee List"}
-              {activeSection === "exam-register" && "Register Exam"}
-              {activeSection === "exam-list" && "Exams List"}
+              {getPageTitle()}
             </h1>
             <p className="text-sm text-gray-600">
               Victoria College - Accounting Department
@@ -147,24 +229,38 @@ export default function Dashboard() {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-6">
-          {activeSection === "register" && (
-            <div>
-              <TeacherForm onTeacherAdded={handleTeacherAdded} />
-            </div>
-          )}
-          {activeSection === "employee-list" && (
-            <TeacherTable
-              teachers={teachers}
-              isLoading={isLoading}
-              filters={teacherFilters}
-              onFilterChange={setTeacherFilters}
+          {/* Employee Registration Forms */}
+          {activeSection.startsWith("register-") && currentCategory && (
+            <DynamicEmployeeForm
+              category={currentCategory}
+              onEmployeeAdded={handleEmployeeAdded}
+              onEmployeeUpdated={handleEmployeeUpdated}
+              initialData={editingEmployee}
+              isEditing={!!editingEmployee}
+              onCancel={handleCancelEdit}
             />
           )}
+
+          {/* Employee List Tables */}
+          {activeSection.startsWith("list-") && currentCategory && (
+            <DynamicEmployeeTable
+              category={currentCategory}
+              employees={employees}
+              isLoading={isLoading}
+              onEdit={handleEmployeeEdit}
+              onDelete={handleEmployeeDelete}
+              onRefresh={fetchEmployees}
+            />
+          )}
+
+          {/* Exam Register */}
           {activeSection === "exam-register" && (
             <div>
               <ExamForm onExamAdded={handleExamAdded} />
             </div>
           )}
+
+          {/* Exam List */}
           {activeSection === "exam-list" && (
             <ExamTable
               exams={exams}
