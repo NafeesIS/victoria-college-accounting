@@ -32,3 +32,12 @@ body {
   color: var(--placeholder);
   opacity: 1; /* ensures consistent visibility */
 }
+
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}

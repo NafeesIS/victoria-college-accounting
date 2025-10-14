@@ -5,7 +5,6 @@ import { authOptions } from "../../../../../lib/auth";
 import dbConnect from "../../../../../lib/mongodb";
 import Employee from "../../../../../models/Employee";
 import { employeeCategories } from "@/contants";
-// import { employeeCategories } from "@/constants/employeeCategories";
 
 // ================================
 // GET /api/employees/[category]/[id]

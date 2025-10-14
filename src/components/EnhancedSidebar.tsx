@@ -4,7 +4,6 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { X, ChevronDown, ChevronRight } from "lucide-react";
 import { employeeCategories } from "@/contants";
-// import { employeeCategories } from "@/constants/employeeCategories";
 
 interface EnhancedSidebarProps {
   activeSection: string;
@@ -64,7 +63,7 @@ export default function EnhancedSidebar({
 
   return (
     <div
-    className={`fixed lg:static inset-y-0 left-0 z-40 w-80 bg-indigo-900 text-white flex flex-col transform transition-transform duration-300 
+    className={`fixed lg:static inset-y-0 left-0 z-40 md:w-80 lg:w-96 bg-indigo-900 text-white flex flex-col transform transition-transform duration-300 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
       {/* Header */}
@@ -82,7 +81,7 @@ export default function EnhancedSidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-4 overflow-y-auto">
+      <nav className="flex-1 px-4 py-4 overflow-y-auto no-scrollbar">
         <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.id}>
