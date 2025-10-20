@@ -112,8 +112,9 @@ export const employeeCategories: Record<string, CategoryConfig> = {
       {
         name: "designation",
         label: "Designation",
-        type: "text",
+        type: "select",
         required: true,
+        options: ["Principle", "Vice Principle"],
       },
       {
         name: "idNumber",
@@ -163,6 +164,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
           "Assistant Professor",
           "Lecturer",
           "Senior Lecturer",
+          "Demonstrator",
         ],
       },
       {
@@ -294,6 +296,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "text",
         required: true,
+        options: ["Librarian", "Assistant Librarian"],
       },
       {
         name: "idNumber",
@@ -329,6 +332,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "text",
         required: true,
+        options: ["Physical Education Teacher"],
       },
       {
         name: "idNumber",
@@ -364,6 +368,15 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "text",
         required: true,
+        options: [
+          "Head Assistant",
+          "Accountant",
+          "Accounts Assistant",
+          "Office Assistant-Cum-Computer Typist",
+          "Cashier",
+          "Store Keeper",
+          "Mechanic Cum Electrician",
+        ],
       },
       {
         name: "idNumber",
@@ -399,6 +412,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "text",
         required: true,
+        options: [
+          "Cash Sarkar",
+          "Skilled Worker",
+          "Office Support Staff",
+          "Sweeper",
+        ],
       },
       {
         name: "idNumber",
@@ -477,6 +496,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
         unique: true,
       },
+      {
+        name: "place",
+        label: "Place",
+        type: "text",
+        required: true,
+      },
     ],
     tableColumns: ["name", "designation", "nidNumber", "eTin"],
   },
@@ -504,6 +529,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         type: "text",
         required: true,
         unique: true,
+      },
+      {
+        name: "place",
+        label: "Place",
+        type: "text",
+        required: true,
       },
     ],
     tableColumns: ["name", "designation", "nidNumber", "eTin"],
