@@ -9,6 +9,7 @@ import ExamTable from "@/components/ExamTable";
 import EnhancedSidebar from "@/components/EnhancedSidebar";
 import DynamicEmployeeForm from "@/components/DynamicEmployeeForm";
 import DynamicEmployeeTable from "@/components/DynamicEmployeeTable";
+import DashboardHome from "@/components/DashboardHome";
 import { Menu } from "lucide-react";
 
 export default function Dashboard() {
@@ -31,7 +32,7 @@ export default function Dashboard() {
 
   // Common
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState("exam-register");
+  const [activeSection, setActiveSection] = useState("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Extract category from section (e.g., "register-governmentTeacher" -> "governmentTeacher")
@@ -165,12 +166,12 @@ export default function Dashboard() {
 
   // Get page title
   const getPageTitle = () => {
+    if (activeSection === "home") return "Dashboard Home";
     if (activeSection === "exam-register") return "Register Exam";
     if (activeSection === "exam-list") return "Exams List";
     if (activeSection.startsWith("register-")) {
       const category = currentCategory;
       if (category) {
-        // Get category label from employeeCategories
         return editingEmployee ? "Edit Employee" : "Register Employee";
       }
     }
@@ -229,6 +230,11 @@ export default function Dashboard() {
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-6">
+          {/* Dashboard Home */}
+          {activeSection === "home" && (
+            <DashboardHome userName={session.user?.name || ""} />
+          )}
+
           {/* Employee Registration Forms */}
           {activeSection.startsWith("register-") && currentCategory && (
             <DynamicEmployeeForm

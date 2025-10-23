@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { signOut } from "next-auth/react";
-import { X, ChevronDown, ChevronRight } from "lucide-react";
+import { X, ChevronDown, ChevronRight, Home } from "lucide-react";
 import { employeeCategories } from "@/contants";
 
 interface EnhancedSidebarProps {
@@ -36,6 +36,12 @@ export default function EnhancedSidebar({
 
   const menuItems = [
     {
+      id: "home",
+      label: "Dashboard Home",
+      icon: "🏠",
+      hasSubmenu: false,
+    },
+    {
       id: "employee-registration",
       label: "Employee Registration",
       icon: "👤",
@@ -63,7 +69,7 @@ export default function EnhancedSidebar({
 
   return (
     <div
-    className={`fixed lg:static inset-y-0 left-0 z-40 md:w-80 lg:w-96 bg-indigo-900 text-white flex flex-col transform transition-transform duration-300 
+      className={`fixed lg:static inset-y-0 left-0 z-40 md:w-80 lg:w-96 bg-indigo-900 text-white flex flex-col transform transition-transform duration-300 
       ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
     >
       {/* Header */}
