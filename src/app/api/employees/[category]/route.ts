@@ -5,7 +5,6 @@ import { authOptions } from "../../../../lib/auth";
 import dbConnect from "../../../../lib/mongodb";
 import Employee from "../../../../models/Employee";
 import { employeeCategories } from "@/contants";
-// import { employeeCategories } from "@/constants/employeeCategories";
 
 // ================================
 // GET /api/employees/[category]
@@ -34,8 +33,6 @@ export async function GET(
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || "";
-    const sortBy = searchParams.get("sortBy") || "createdAt";
-    const sortOrder = searchParams.get("sortOrder") || "desc";
 
     // Build query
     const query: any = { 
@@ -56,7 +53,34 @@ export async function GET(
     const employees = await Employee.find(query)
       .populate("createdBy", "name email")
       .populate("updatedBy", "name email")
-      .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 });
+      .sort({ createdAt: 1 }); // Sort by creation date ascending (oldest first)
+
+    // Custom sort by designation order if available
+    const categoryConfig = employeeCategories[category];
+    if (categoryConfig?.designationOrder) {
+      const designationOrder = categoryConfig.designationOrder;
+      
+      employees.sort((a, b) => {
+        const aIndex = designationOrder.indexOf(a.designation);
+        const bIndex = designationOrder.indexOf(b.designation);
+        
+        // If both designations are in the order list
+        if (aIndex !== -1 && bIndex !== -1) {
+          if (aIndex !== bIndex) {
+            return aIndex - bIndex; // Sort by designation order
+          }
+          // If same designation, sort by creation date (already sorted by DB query)
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        }
+        
+        // If only one is in the order list, prioritize it
+        if (aIndex !== -1) return -1;
+        if (bIndex !== -1) return 1;
+        
+        // If neither is in the order list, maintain creation date order
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+    }
 
     return NextResponse.json(employees);
   } catch (error) {

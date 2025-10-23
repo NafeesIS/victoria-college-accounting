@@ -99,14 +99,456 @@ export interface FieldConfig {
 export interface CategoryConfig {
   label: string;
   iconName: string; // Store icon name as string
+  designationOrder?: string[];
   fields: FieldConfig[];
   tableColumns: string[];
 }
+
+// export const employeeCategories: Record<string, CategoryConfig> = {
+//   administration: {
+//     label: "Administration",
+//     iconName: "Briefcase",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "select",
+//         required: true,
+//         options: ["Principle", "Vice Principle"],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       { name: "bcsBatch", label: "BCS Batch", type: "text", required: true },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: [
+//       "name",
+//       "designation",
+//       "idNumber",
+//       "bcsBatch",
+//       "nidNumber",
+//       "eTin",
+//     ],
+//   },
+//   governmentTeacher: {
+//     label: "Government Teacher",
+//     iconName: "GraduationCap",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "select",
+//         required: true,
+//         options: [
+//           "Professor",
+//           "Associate Professor",
+//           "Assistant Professor",
+//           "Lecturer",
+//           "Senior Lecturer",
+//           "Demonstrator",
+//         ],
+//       },
+//       {
+//         name: "department",
+//         label: "Department",
+//         type: "select",
+//         required: true,
+//         options: [
+//           "Bangla",
+//           "English",
+//           "Mathematics",
+//           "Physics",
+//           "Chemistry",
+//           "Biology",
+//           "ICT",
+//           "Economics",
+//           "Political Science",
+//           "History",
+//           "Islamic Studies",
+//           "Accounting",
+//           "Management",
+//           "Finance",
+//         ],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       { name: "bcsBatch", label: "BCS Batch", type: "text", required: true },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: [
+//       "name",
+//       "designation",
+//       "department",
+//       "idNumber",
+//       "bcsBatch",
+//       "nidNumber",
+//       "eTin",
+//     ],
+//   },
+//   guestTeacher: {
+//     label: "Guest Teacher",
+//     iconName: "Users",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//       },
+//       {
+//         name: "department",
+//         label: "Department",
+//         type: "select",
+//         required: true,
+//         options: [
+//           "Bangla",
+//           "English",
+//           "Mathematics",
+//           "Physics",
+//           "Chemistry",
+//           "Biology",
+//           "ICT",
+//           "Economics",
+//           "Political Science",
+//           "History",
+//           "Islamic Studies",
+//           "Accounting",
+//           "Management",
+//           "Finance",
+//         ],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: [
+//       "name",
+//       "designation",
+//       "department",
+//       "idNumber",
+//       "nidNumber",
+//       "eTin",
+//     ],
+//   },
+//   librarian: {
+//     label: "Librarian",
+//     iconName: "BookOpen",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//         options: ["Librarian", "Assistant Librarian"],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "idNumber", "nidNumber", "eTin"],
+//   },
+//   physicalEducationTeacher: {
+//     label: "Physical Education Teacher",
+//     iconName: "Dumbbell",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//         options: ["Physical Education Teacher"],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "idNumber", "nidNumber", "eTin"],
+//   },
+//   government3rdClass: {
+//     label: "Government 3rd Class Employee",
+//     iconName: "UserCog",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//         options: [
+//           "Head Assistant",
+//           "Accountant",
+//           "Accounts Assistant",
+//           "Office Assistant-Cum-Computer Typist",
+//           "Cashier",
+//           "Store Keeper",
+//           "Mechanic Cum Electrician",
+//         ],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "idNumber", "nidNumber", "eTin"],
+//   },
+//   government4thClass: {
+//     label: "Government 4th Class Employee",
+//     iconName: "UserCog",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//         options: [
+//           "Cash Sarkar",
+//           "Skilled Worker",
+//           "Office Support Staff",
+//           "Sweeper",
+//         ],
+//       },
+//       {
+//         name: "idNumber",
+//         label: "ID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "idNumber", "nidNumber", "eTin"],
+//   },
+//   nonGovernment3rdClass: {
+//     label: "Non-Government 3rd Class Employee",
+//     iconName: "UserCog",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "nidNumber", "eTin"],
+//   },
+//   nonGovernment4thClass: {
+//     label: "Non-Government 4th Class Employee",
+//     iconName: "UserCog",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "place",
+//         label: "Place",
+//         type: "text",
+//         required: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "nidNumber", "eTin"],
+//   },
+//   nonGovernmentDepartmentalClerk: {
+//     label: "Non-Government Departmental Clerk",
+//     iconName: "UserCog",
+//     fields: [
+//       { name: "name", label: "Full Name", type: "text", required: true },
+//       {
+//         name: "designation",
+//         label: "Designation",
+//         type: "text",
+//         required: true,
+//       },
+//       {
+//         name: "nidNumber",
+//         label: "NID Number",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "eTin",
+//         label: "E-TIN",
+//         type: "text",
+//         required: true,
+//         unique: true,
+//       },
+//       {
+//         name: "place",
+//         label: "Place",
+//         type: "text",
+//         required: true,
+//       },
+//     ],
+//     tableColumns: ["name", "designation", "nidNumber", "eTin"],
+//   },
+// };
+
+
 
 export const employeeCategories: Record<string, CategoryConfig> = {
   administration: {
     label: "Administration",
     iconName: "Briefcase",
+    designationOrder: ["Principal", "Vice-Principal"],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
@@ -114,7 +556,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "select",
         required: true,
-        options: ["Principle", "Vice Principle"],
+        options: ["Principal", "Vice-Principal"],
       },
       {
         name: "idNumber",
@@ -151,6 +593,13 @@ export const employeeCategories: Record<string, CategoryConfig> = {
   governmentTeacher: {
     label: "Government Teacher",
     iconName: "GraduationCap",
+    designationOrder: [
+      "Professor",
+      "Associate Professor",
+      "Assistant Professor",
+      "Lecturer",
+      "Demonstrator",
+    ],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
@@ -163,7 +612,6 @@ export const employeeCategories: Record<string, CategoryConfig> = {
           "Associate Professor",
           "Assistant Professor",
           "Lecturer",
-          "Senior Lecturer",
           "Demonstrator",
         ],
       },
@@ -225,13 +673,27 @@ export const employeeCategories: Record<string, CategoryConfig> = {
   guestTeacher: {
     label: "Guest Teacher",
     iconName: "Users",
+    designationOrder: [
+      "Professor",
+      "Associate Professor",
+      "Assistant Professor",
+      "Lecturer",
+      "Demonstrator",
+    ],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
         name: "designation",
         label: "Designation",
-        type: "text",
+        type: "select",
         required: true,
+        options: [
+          "Professor",
+          "Associate Professor",
+          "Assistant Professor",
+          "Lecturer",
+          "Demonstrator",
+        ],
       },
       {
         name: "department",
@@ -289,12 +751,13 @@ export const employeeCategories: Record<string, CategoryConfig> = {
   librarian: {
     label: "Librarian",
     iconName: "BookOpen",
+    designationOrder: ["Librarian", "Assistant Librarian"],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
         name: "designation",
         label: "Designation",
-        type: "text",
+        type: "select",
         required: true,
         options: ["Librarian", "Assistant Librarian"],
       },
@@ -332,7 +795,6 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         label: "Designation",
         type: "text",
         required: true,
-        options: ["Physical Education Teacher"],
       },
       {
         name: "idNumber",
@@ -361,12 +823,21 @@ export const employeeCategories: Record<string, CategoryConfig> = {
   government3rdClass: {
     label: "Government 3rd Class Employee",
     iconName: "UserCog",
+    designationOrder: [
+      "Head Assistant",
+      "Accountant",
+      "Accounts Assistant",
+      "Office Assistant-Cum-Computer Typist",
+      "Cashier",
+      "Store Keeper",
+      "Mechanic Cum Electrician",
+    ],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
         name: "designation",
         label: "Designation",
-        type: "text",
+        type: "select",
         required: true,
         options: [
           "Head Assistant",
@@ -405,12 +876,18 @@ export const employeeCategories: Record<string, CategoryConfig> = {
   government4thClass: {
     label: "Government 4th Class Employee",
     iconName: "UserCog",
+    designationOrder: [
+      "Cash Sarkar",
+      "Skilled Worker",
+      "Office Support Staff",
+      "Sweeper",
+    ],
     fields: [
       { name: "name", label: "Full Name", type: "text", required: true },
       {
         name: "designation",
         label: "Designation",
-        type: "text",
+        type: "select",
         required: true,
         options: [
           "Cash Sarkar",
@@ -455,6 +932,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
       },
       {
+        name: "place",
+        label: "Place/Location",
+        type: "text",
+        required: false,
+      },
+      {
         name: "nidNumber",
         label: "NID Number",
         type: "text",
@@ -469,7 +952,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         unique: true,
       },
     ],
-    tableColumns: ["name", "designation", "nidNumber", "eTin"],
+    tableColumns: ["name", "designation", "place", "nidNumber", "eTin"],
   },
   nonGovernment4thClass: {
     label: "Non-Government 4th Class Employee",
@@ -483,6 +966,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
       },
       {
+        name: "place",
+        label: "Place/Location",
+        type: "text",
+        required: false,
+      },
+      {
         name: "nidNumber",
         label: "NID Number",
         type: "text",
@@ -496,14 +985,8 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
         unique: true,
       },
-      {
-        name: "place",
-        label: "Place",
-        type: "text",
-        required: true,
-      },
     ],
-    tableColumns: ["name", "designation", "nidNumber", "eTin"],
+    tableColumns: ["name", "designation", "place", "nidNumber", "eTin"],
   },
   nonGovernmentDepartmentalClerk: {
     label: "Non-Government Departmental Clerk",
@@ -517,6 +1000,12 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
       },
       {
+        name: "place",
+        label: "Place/Location",
+        type: "text",
+        required: false,
+      },
+      {
         name: "nidNumber",
         label: "NID Number",
         type: "text",
@@ -530,13 +1019,7 @@ export const employeeCategories: Record<string, CategoryConfig> = {
         required: true,
         unique: true,
       },
-      {
-        name: "place",
-        label: "Place",
-        type: "text",
-        required: true,
-      },
     ],
-    tableColumns: ["name", "designation", "nidNumber", "eTin"],
+    tableColumns: ["name", "designation", "place", "nidNumber", "eTin"],
   },
 };
